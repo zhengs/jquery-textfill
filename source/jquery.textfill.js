@@ -94,6 +94,8 @@
 
 			_debug(
 				'[TextFill] '  + prefix + ' { ' +
+                                'letter-spacing: ' + ourText.css('letter-spacing') + ',' +
+                                'line-height: ' + ourText.css('line-height') + ',' +
 				'font-size: ' + ourText.css('font-size') + ',' +
 				'Height: '    + ourText.height() + 'px ' + _m(ourText.height(), maxHeight) + maxHeight + 'px,' +
 				'Width: '     + ourText.width()  + _m(ourText.width() , maxWidth)  + maxWidth + ',' +
@@ -121,7 +123,7 @@
 		 *
 		 * @return Size (in pixels) that the font can be resized.
 		 */
-		function _sizing(prefix, ourText, func, max, maxHeight, maxWidth, minFontPixels, maxFontPixels) {
+		function _sizing(prefix, ourText, func, max, maxHeight, maxWidth, minFontPixels, maxFontPixels, lineHeight, letterSpacing) {
 
 			_debug_sizing(
 				prefix, ourText,
@@ -153,6 +155,8 @@
 
 				var fontSize = Math.floor((minFontPixels + maxFontPixels) / 2);
 				ourText.css('font-size', fontSize);
+                                ourText.css('letter-spacing', letterSpacing);
+        			ourText.css('line-height', lineHeight);
 				var curSize = func.call(ourText);
 
 				if (curSize <= max) {
@@ -174,6 +178,8 @@
 			}
 
 			ourText.css('font-size', maxFontPixels);
+      			ourText.css('letter-spacing', letterSpacing);
+      			ourText.css('line-height', lineHeight);
 
 			if (func.call(ourText) <= max) {
 				minFontPixels = maxFontPixels;
@@ -190,7 +196,7 @@
 		// _______ _______ _______  ______ _______
 		// |______    |    |_____| |_____/    |
 		// ______|    |    |     | |    \_    |
-        //
+        	//
 		// Let's get it started (yeah)!
 
 		_debug('[TextFill] Start Debug');
@@ -231,7 +237,8 @@
 
 			var oldFontSize = ourText.css('font-size');
 
-			var lineHeight  = parseFloat(ourText.css('line-height')) / parseFloat(oldFontSize);
+			var lineHeight    = parseFloat(ourText.css('line-height'))    / parseFloat(oldFontSize);
+      			var letterSpacing = parseFloat(ourText.css('letter-spacing')) / parseFloat(oldFontSize);
 
 			var minFontPixels = Opts.minFontPixels;
 
@@ -256,7 +263,7 @@
 					'Height', ourText,
 					$.fn.height, maxHeight,
 					maxHeight, maxWidth,
-					minFontPixels, maxFontPixels
+					minFontPixels, maxFontPixels, lineHeight, letterSpacing
 				);
 			}
 
@@ -268,15 +275,19 @@
 				'Width', ourText,
 				$.fn.width, maxWidth,
 				maxHeight, maxWidth,
-				minFontPixels, maxFontPixels
+				minFontPixels, maxFontPixels, lineHeight, letterSpacing
 			);
 
 			// 3. Actually resize the text!
 
 			if (Opts.widthOnly) {
-				ourText.css({
-					'font-size'  : fontSizeWidth
-				});
+        			ourText.css({
+          			'font-size': fontSizeWidth,
+          			'letter-spacing': letterSpacing,
+          			'line-height': lineHeight,
+          			'white-space': 'nowrap'
+        		});
+
 
 				if (Opts.changeLineHeight) {
 					ourText.parent().css(
@@ -289,6 +300,8 @@
 				var fontSizeFinal = Math.min(fontSizeHeight, fontSizeWidth);
 
 				ourText.css('font-size', fontSizeFinal);
+        			ourText.css('letter-spacing', letterSpacing);
+        			ourText.css('line-height', lineHeight);
 
 				if (Opts.changeLineHeight) {
 					ourText.parent().css(
@@ -311,6 +324,8 @@
 				(ourText.height() > maxHeight && !Opts.widthOnly && !Opts.allowOverflow)) { 
 
 				ourText.css('font-size', oldFontSize);
+        			ourText.css('letter-spacing', letterSpacing);
+        			ourText.css('line-height', lineHeight);
 
 				// Failure callback
 				if (Opts.fail) {
